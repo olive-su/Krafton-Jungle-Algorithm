@@ -1,15 +1,7 @@
-'''
-시작, 끝 : 실내
-산책 중 실내가 있으면 안됨
-매일 다른 산책 경로
-n개의 장소를 N-1개의 경로
-'''
-
-# time : 30'
-
 import sys
-
 input = sys.stdin.readline
+sys.setrecursionlimit(10**9)
+
 n = int(input())
 in_out = list(map(int, list(input().rstrip())))
 in_out.insert(0, -1)
@@ -22,19 +14,25 @@ for _ in range(n - 1):
     nodes[u].append(v)
     nodes[v].append(u)
 
-def dfs(start):
-    global answer
-
-    for j in nodes[start]:
-        if not visited[j]:
-            if in_out[j]: 
-                answer += 1 # 실내면 종료
-            else:
+def dfs(vertex):
+    cnt = 0
+    for j in nodes[vertex]:
+        if in_out[j]:
+            cnt += 1
+        else:
+            if not visited[j]:
                 visited[j] = True
-                dfs(j)
-                visited[j] = False
-        
-dfs(1)
+                cnt += dfs(j)
+    return cnt
+
+for i in range(1, n + 1):
+    if in_out[i]:
+        for j in nodes[i]:
+            if in_out[j]: answer += 1
+    else:
+        if not visited[i]:
+            visited[i] = True
+            rst = dfs(i)
+            answer += rst * (rst - 1)
 
 print(answer)
-
